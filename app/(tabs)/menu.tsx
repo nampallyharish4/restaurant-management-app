@@ -250,8 +250,8 @@ export default function MenuScreen() {
                 selectedCategory === item.id && styles.categoryCardActive,
               ]}
               onPress={() => setSelectedCategory(item.id)}
+              activeOpacity={0.8}
             >
-              {/* Placeholder icon: colored circle */}
               <View style={styles.categoryIcon}>
                 <Image
                   source={{
@@ -268,13 +268,15 @@ export default function MenuScreen() {
                   selectedCategory === item.id &&
                     styles.categoryCardLabelActive,
                 ]}
+                numberOfLines={2}
+                ellipsizeMode="tail"
               >
                 {item.name}
               </Text>
             </TouchableOpacity>
           )}
-          contentContainerStyle={{ paddingLeft: 8, paddingRight: 8 }}
-          style={{ minHeight: 100 }}
+          contentContainerStyle={{ paddingLeft: 8, paddingRight: 8, alignItems: 'center', minHeight: 140 }}
+          style={{ minHeight: 140 }}
         />
       </View>
 
@@ -314,6 +316,11 @@ export default function MenuScreen() {
     </SafeAreaView>
   );
 }
+
+const CATEGORY_CARD_WIDTH = 110;
+const CATEGORY_CARD_HEIGHT = 130;
+const CATEGORY_ICON_SIZE = 72;
+const CATEGORY_IMAGE_SIZE = 60;
 
 const styles = StyleSheet.create({
   container: {
@@ -492,31 +499,35 @@ const styles = StyleSheet.create({
     color: '#FF6B35',
     marginLeft: 8,
   },
+  // --- CATEGORY CARD STYLES FOR UNIFORM SIZE ---
   categoryCard: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 12,
+    width: CATEGORY_CARD_WIDTH,
+    height: CATEGORY_CARD_HEIGHT,
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 100,
     borderWidth: 1,
     borderColor: '#eee',
+    padding: 0,
+    overflow: 'hidden',
   },
   categoryCardActive: { borderColor: '#FF6B35', backgroundColor: '#fff5f2' },
   categoryIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: CATEGORY_ICON_SIZE,
+    height: CATEGORY_ICON_SIZE,
+    borderRadius: CATEGORY_ICON_SIZE / 2,
     marginBottom: 8,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
+    overflow: 'hidden',
   },
   categoryIconImage: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: CATEGORY_IMAGE_SIZE,
+    height: CATEGORY_IMAGE_SIZE,
+    borderRadius: CATEGORY_IMAGE_SIZE / 2,
     resizeMode: 'cover',
     alignSelf: 'center',
   },
@@ -525,6 +536,12 @@ const styles = StyleSheet.create({
     color: '#666',
     fontWeight: '500',
     textAlign: 'center',
+    paddingHorizontal: 4,
+    width: CATEGORY_CARD_WIDTH - 8,
+    minHeight: 36,
+    maxHeight: 36,
+    lineHeight: 18,
+    flexShrink: 1,
   },
   categoryCardLabelActive: { color: '#FF6B35', fontWeight: '700' },
 });
