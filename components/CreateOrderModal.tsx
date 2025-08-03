@@ -190,10 +190,10 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
             {menuItems.map((menuItem) => {
               const orderItem = orderItems.find(item => item.menuItem.id === menuItem.id);
               return (
-                <View key={menuItem.id} style={styles.menuItemCard}>
+                <View key={menuItem.id} style={[styles.menuItemCard, { backgroundColor: colors.card }, shadows.small]}>
                   <View style={styles.menuItemInfo}>
-                    <Text style={styles.menuItemName}>{menuItem.name}</Text>
-                    <Text style={styles.menuItemPrice}>${menuItem.price.toFixed(2)}</Text>
+                    <Text style={[styles.menuItemName, { color: colors.text }]}>{menuItem.name}</Text>
+                    <Text style={[styles.menuItemPrice, { color: colors.secondary }]}>${menuItem.price.toFixed(2)}</Text>
                   </View>
                   <View style={styles.quantityControls}>
                     {orderItem ? (
@@ -342,15 +342,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,
     marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   menuItemInfo: {
     flex: 1,
@@ -358,12 +352,10 @@ const styles = StyleSheet.create({
   menuItemName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
     marginBottom: 4,
   },
   menuItemPrice: {
     fontSize: 14,
-    color: '#2D5016',
     fontWeight: '600',
   },
   quantityControls: {
