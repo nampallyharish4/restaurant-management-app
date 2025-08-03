@@ -6,7 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function SettingsScreen() {
-  const { colors } = useTheme();
+  const { colors, shadows } = useTheme();
   const [notifications, setNotifications] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [autoAccept, setAutoAccept] = useState(false);
@@ -106,7 +106,7 @@ export default function SettingsScreen() {
         {settingSections.map((section, sectionIndex) => (
           <View key={sectionIndex} style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
-            <View style={[styles.sectionContent, { backgroundColor: colors.card }]}>
+            <View style={[styles.sectionContent, { backgroundColor: colors.card }, shadows.small]}>
               {section.items.map((item, itemIndex) => (
                 <TouchableOpacity
                   key={itemIndex}
@@ -135,7 +135,7 @@ export default function SettingsScreen() {
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>About</Text>
-          <View style={[styles.sectionContent, { backgroundColor: colors.card }]}>
+          <View style={[styles.sectionContent, { backgroundColor: colors.card }, shadows.small]}>
             <View style={[styles.aboutItem, { borderBottomColor: colors.divider }]}>
               <Text style={[styles.aboutLabel, { color: colors.text }]}>Version</Text>
               <Text style={[styles.aboutValue, { color: colors.textSecondary }]}>1.0.0</Text>
