@@ -4,9 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TrendingUp, DollarSign, Clock, Users } from 'lucide-react-native';
 import { AnalyticsService } from '@/services/AnalyticsService';
 import { AnalyticsData } from '@/types/Analytics';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function AnalyticsScreen() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const { colors } = useTheme();
 
   useEffect(() => {
     loadAnalytics();
@@ -32,85 +34,85 @@ export default function AnalyticsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Analytics</Text>
-        <Text style={styles.subtitle}>Today's Performance</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Analytics</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Today's Performance</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.metricsGrid}>
-          <View style={styles.metricCard}>
+          <View style={[styles.metricCard, { backgroundColor: colors.card }]}>
             <View style={styles.metricIcon}>
               <DollarSign size={24} color="#2D5016" />
             </View>
-            <Text style={styles.metricValue}>
+            <Text style={[styles.metricValue, { color: colors.text }]}>
               ₹{analytics.totalRevenue.toFixed(0)}
             </Text>
-            <Text style={styles.metricLabel}>Total Revenue</Text>
+            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Total Revenue</Text>
             <Text style={[styles.metricChange, { color: '#2D5016' }]}>
               +{analytics.revenueChange}% from yesterday
             </Text>
           </View>
 
-          <View style={styles.metricCard}>
+          <View style={[styles.metricCard, { backgroundColor: colors.card }]}>
             <View style={styles.metricIcon}>
               <TrendingUp size={24} color="#FF6B35" />
             </View>
-            <Text style={styles.metricValue}>{analytics.totalOrders}</Text>
-            <Text style={styles.metricLabel}>Total Orders</Text>
+            <Text style={[styles.metricValue, { color: colors.text }]}>{analytics.totalOrders}</Text>
+            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Total Orders</Text>
             <Text style={[styles.metricChange, { color: '#FF6B35' }]}>
               +{analytics.ordersChange}% from yesterday
             </Text>
           </View>
 
-          <View style={styles.metricCard}>
+          <View style={[styles.metricCard, { backgroundColor: colors.card }]}>
             <View style={styles.metricIcon}>
               <Clock size={24} color="#FFB800" />
             </View>
-            <Text style={styles.metricValue}>{analytics.avgOrderTime}m</Text>
-            <Text style={styles.metricLabel}>Avg Order Time</Text>
+            <Text style={[styles.metricValue, { color: colors.text }]}>{analytics.avgOrderTime}m</Text>
+            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Avg Order Time</Text>
             <Text style={[styles.metricChange, { color: '#2D5016' }]}>
               -{analytics.timeImprovement}m faster
             </Text>
           </View>
 
-          <View style={styles.metricCard}>
+          <View style={[styles.metricCard, { backgroundColor: colors.card }]}>
             <View style={styles.metricIcon}>
               <Users size={24} color="#6B46C1" />
             </View>
-            <Text style={styles.metricValue}>{analytics.uniqueCustomers}</Text>
-            <Text style={styles.metricLabel}>Unique Customers</Text>
+            <Text style={[styles.metricValue, { color: colors.text }]}>{analytics.uniqueCustomers}</Text>
+            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Unique Customers</Text>
             <Text style={[styles.metricChange, { color: '#6B46C1' }]}>
               +{analytics.newCustomers} new today
             </Text>
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Popular Items</Text>
+        <View style={[styles.section, { backgroundColor: colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Popular Items</Text>
           {analytics.popularItems.map((item, index) => (
-            <View key={item.id} style={styles.popularItem}>
+            <View key={item.id} style={[styles.popularItem, { borderBottomColor: colors.border }]}>
               <View style={styles.itemRank}>
                 <Text style={styles.rankNumber}>{index + 1}</Text>
               </View>
               <View style={styles.itemInfo}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemSales}>{item.orderCount} orders</Text>
+                <Text style={[styles.itemName, { color: colors.text }]}>{item.name}</Text>
+                <Text style={[styles.itemSales, { color: colors.textSecondary }]}>{item.orderCount} orders</Text>
               </View>
-              <Text style={styles.itemRevenue}>₹{item.revenue.toFixed(0)}</Text>
+              <Text style={[styles.itemRevenue, { color: '#2D5016' }]}>₹{item.revenue.toFixed(0)}</Text>
             </View>
           ))}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Order Status Distribution</Text>
+        <View style={[styles.section, { backgroundColor: colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Order Status Distribution</Text>
           <View style={styles.statusGrid}>
             {analytics.orderStatusDistribution.map((status) => (
-              <View key={status.status} style={styles.statusCard}>
-                <Text style={styles.statusCount}>{status.count}</Text>
-                <Text style={styles.statusLabel}>{status.status}</Text>
-                <Text style={styles.statusPercentage}>
+              <View key={status.status} style={[styles.statusCard, { backgroundColor: colors.background }]}>
+                <Text style={[styles.statusCount, { color: colors.text }]}>{status.count}</Text>
+                <Text style={[styles.statusLabel, { color: colors.textSecondary }]}>{status.status}</Text>
+                <Text style={[styles.statusPercentage, { color: '#FF6B35' }]}>
                   {((status.count / analytics.totalOrders) * 100).toFixed(1)}%
                 </Text>
               </View>
@@ -118,8 +120,8 @@ export default function AnalyticsScreen() {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Hourly Performance</Text>
+        <View style={[styles.section, { backgroundColor: colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Hourly Performance</Text>
           <View style={styles.hourlyChart}>
             {analytics.hourlyData.map((hour) => (
               <View key={hour.hour} style={styles.hourlyBar}>
@@ -134,10 +136,11 @@ export default function AnalyticsScreen() {
                           )) *
                         100
                       }%`,
+                      backgroundColor: colors.primary,
                     },
                   ]}
                 />
-                <Text style={styles.hourLabel}>{hour.hour}</Text>
+                <Text style={[styles.hourLabel, { color: colors.textSecondary }]}>{hour.hour}</Text>
               </View>
             ))}
           </View>

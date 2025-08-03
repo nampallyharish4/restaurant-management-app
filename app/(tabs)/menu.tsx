@@ -16,8 +16,10 @@ import { MenuService } from '@/services/MenuService';
 import { MenuItem, MenuCategory } from '@/types/Menu';
 import { CreateMenuItemModal } from '@/components/CreateMenuItemModal';
 import { menuData } from '../../data/menuData';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function MenuScreen() {
+  const { colors } = useTheme();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -197,9 +199,9 @@ export default function MenuScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Menu Management</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Menu Management</Text>
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => setShowCreateModal(true)}
@@ -461,14 +463,6 @@ const styles = StyleSheet.create({
   menuItemActions: {
     marginLeft: 12,
     gap: 8,
-  },
-  actionButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#f8f9fa',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   emptyState: {
     alignItems: 'center',
