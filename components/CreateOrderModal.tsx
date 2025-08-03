@@ -47,8 +47,9 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
 
   const loadMenuItems = async () => {
     try {
-      const items = await MenuService.getAllMenuItems();
-      setMenuItems(items.filter(item => item.available));
+      // Import and use the menu data directly
+      const { menuData } = await import('@/data/menuData');
+      setMenuItems(menuData);
     } catch (error) {
       Alert.alert('Error', 'Failed to load menu items');
     }
@@ -67,7 +68,7 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
     }
   };
 
-  const handleUpdateQuantity = (menuItemId: string, delta: number) => {
+  const handleUpdateQuantity = (menuItemId: number, delta: number) => {
     setOrderItems(orderItems.map(item => {
       if (item.menuItem.id === menuItemId) {
         const newQuantity = Math.max(0, item.quantity + delta);
@@ -98,7 +99,7 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
       customerPhone: customerPhone.trim() || undefined,
       items: orderItems.map(item => ({
         name: item.menuItem.name,
-        price: item.menuItem.price,
+        price: item.menuItem.fullPrice,
         quantity: item.quantity,
         specialInstructions: item.specialInstructions,
       })),
@@ -121,7 +122,7 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
     onClose();
   };
 
-  const total = orderItems.reduce((sum, item) => sum + (item.menuItem.price * item.quantity), 0);
+  const total = orderItems.reduce((sum, item) => sum + (item.menuItem.fullPrice * item.quantity), 0);
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
@@ -243,7 +244,7 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
         <View style={[styles.footer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
           <View style={styles.totalContainer}>
             <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>Total: </Text>
-            <Text style={[styles.totalAmount, { color: colors.secondary }]}>${total.toFixed(2)}</Text>
+            <Text style={[styles.totalAmount, { color: colors.secondary }]}>₹{total.toFixed(2)}</Text>
           </View>
           <TouchableOpacity
             style={[

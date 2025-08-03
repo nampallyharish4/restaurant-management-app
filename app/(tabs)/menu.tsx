@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -11,12 +12,17 @@ import {
   SectionList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Plus, Search, CreditCard as Edit3, Trash2 } from 'lucide-react-native';
+import { Plus, Search, CreditCard as Edit3, Trash2, ShoppingCart, Minus } from 'lucide-react-native';
 import { MenuService } from '@/services/MenuService';
 import { MenuItem, MenuCategory } from '@/types/Menu';
 import { CreateMenuItemModal } from '@/components/CreateMenuItemModal';
 import { menuData } from '../../data/menuData';
 import { useTheme } from '@/contexts/ThemeContext';
+
+interface CartItem {
+  menuItem: MenuItem;
+  quantity: number;
+}
 
 export default function MenuScreen() {
   const { colors } = useTheme();
@@ -26,6 +32,8 @@ export default function MenuScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [showCart, setShowCart] = useState(false);
 
   useEffect(() => {
     loadMenuData();
@@ -81,6 +89,64 @@ export default function MenuScreen() {
     );
   };
 
+  const addToCart = (menuItem: MenuItem) => {
+    const existingItem = cartItems.find(item => item.menuItem.id === menuItem.id);
+    if (existingItem) {
+      setCartItems(cartItems.map(item =>
+        item.menuItem.id === menuItem.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCartItems([...cartItems, { menuItem, quantity: 1 }]);
+    }
+  };
+
+  const updateCartQuantity = (menuItemId: number, delta: number) => {
+    setCartItems(cartItems.map(item => {
+      if (item.menuItem.id === menuItemId) {
+        const newQuantity = Math.max(0, item.quantity + delta);
+        return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
+      }
+      return item;
+    }).filter(Boolean) as CartItem[]);
+  };
+
+  const removeFromCart = (menuItemId: number) => {
+    setCartItems(cartItems.filter(item => item.menuItem.id !== menuItemId));
+  };
+
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + (item.menuItem.fullPrice * item.quantity), 0);
+  };
+
+  const getTotalItems = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const placeOrder = () => {
+    if (cartItems.length === 0) {
+      Alert.alert('Empty Cart', 'Please add items to cart before placing order');
+      return;
+    }
+    
+    Alert.alert(
+      'Place Order',
+      `Total: ₹${getTotalPrice().toFixed(2)}\nItems: ${getTotalItems()}\n\nProceed with order?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Place Order',
+          onPress: () => {
+            Alert.alert('Success', 'Order placed successfully!');
+            setCartItems([]);
+            setShowCart(false);
+          },
+        },
+      ]
+    );
+  };
+
   const filteredItems = menuData.filter((item) => {
     const matchesCategory =
       selectedCategory === 'all' ||
@@ -117,28 +183,60 @@ export default function MenuScreen() {
     }
   };
 
-  const renderMenuItem = ({ item }: { item: MenuItem }) => (
-    <View style={[styles.menuCard, { backgroundColor: colors.card }]}>
-      <Image source={{ uri: item.image }} style={styles.menuItemImage} />
-      <View style={styles.menuItemContent}>
-        <View style={styles.menuItemInfo}>
-          <Text style={[styles.menuItemName, { color: colors.text }]}>{item.name}</Text>
-          <Text style={[styles.menuItemDescription, { color: colors.textSecondary }]}>{item.description}</Text>
-          <View style={styles.menuItemMeta}>
-            <Text style={[styles.menuItemPrice, { color: colors.secondary }]}>₹{item.fullPrice}</Text>
-            <Text
-              style={{
-                color: item.isVeg ? colors.success : colors.error,
-                fontWeight: 'bold',
-              }}
-            >
-              {item.isVeg ? 'Veg' : 'Non-Veg'}
-            </Text>
+  const renderMenuItem = ({ item }: { item: MenuItem }) => {
+    const cartItem = cartItems.find(cartItem => cartItem.menuItem.id === item.id);
+    
+    return (
+      <View style={[styles.menuCard, { backgroundColor: colors.card }]}>
+        <Image source={{ uri: item.image }} style={styles.menuItemImage} />
+        <View style={styles.menuItemContent}>
+          <View style={styles.menuItemInfo}>
+            <Text style={[styles.menuItemName, { color: colors.text }]}>{item.name}</Text>
+            <Text style={[styles.menuItemDescription, { color: colors.textSecondary }]}>{item.description}</Text>
+            <View style={styles.menuItemMeta}>
+              <Text style={[styles.menuItemPrice, { color: colors.secondary }]}>₹{item.fullPrice}</Text>
+              <Text
+                style={{
+                  color: item.isVeg ? colors.success : colors.error,
+                  fontWeight: 'bold',
+                  fontSize: 12,
+                }}
+              >
+                {item.isVeg ? '🟢 Veg' : '🔴 Non-Veg'}
+              </Text>
+            </View>
+            <View style={styles.cartControls}>
+              {cartItem ? (
+                <View style={styles.quantityControls}>
+                  <TouchableOpacity
+                    style={[styles.quantityButton, { backgroundColor: colors.primaryContainer, borderColor: colors.primary }]}
+                    onPress={() => updateCartQuantity(item.id, -1)}
+                  >
+                    <Minus size={16} color={colors.primary} />
+                  </TouchableOpacity>
+                  <Text style={[styles.quantityText, { color: colors.text }]}>{cartItem.quantity}</Text>
+                  <TouchableOpacity
+                    style={[styles.quantityButton, { backgroundColor: colors.primaryContainer, borderColor: colors.primary }]}
+                    onPress={() => updateCartQuantity(item.id, 1)}
+                  >
+                    <Plus size={16} color={colors.primary} />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.addToCartButton, { backgroundColor: colors.primary }]}
+                  onPress={() => addToCart(item)}
+                >
+                  <Plus size={16} color={colors.onPrimary} />
+                  <Text style={[styles.addToCartText, { color: colors.onPrimary }]}>Add</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   // Add image URLs for each category
   const categoryCards = [
@@ -202,12 +300,27 @@ export default function MenuScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>Menu Management</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setShowCreateModal(true)}
-        >
-          <Plus size={24} color="#fff" />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={[styles.cartButton, { backgroundColor: colors.primaryContainer }]}
+            onPress={() => setShowCart(!showCart)}
+          >
+            <ShoppingCart size={20} color={colors.primary} />
+            {getTotalItems() > 0 && (
+              <View style={[styles.cartBadge, { backgroundColor: colors.error }]}>
+                <Text style={[styles.cartBadgeText, { color: colors.onError }]}>
+                  {getTotalItems()}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setShowCreateModal(true)}
+          >
+            <Plus size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.searchContainer}>
@@ -222,6 +335,64 @@ export default function MenuScreen() {
           />
         </View>
       </View>
+
+      {showCart && (
+        <View style={[styles.cartContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={styles.cartHeader}>
+            <Text style={[styles.cartTitle, { color: colors.text }]}>Cart ({getTotalItems()} items)</Text>
+            <Text style={[styles.cartTotal, { color: colors.secondary }]}>₹{getTotalPrice().toFixed(2)}</Text>
+          </View>
+          {cartItems.length > 0 ? (
+            <>
+              <FlatList
+                data={cartItems}
+                keyExtractor={(item) => item.menuItem.id.toString()}
+                renderItem={({ item }) => (
+                  <View style={[styles.cartItem, { borderBottomColor: colors.border }]}>
+                    <View style={styles.cartItemInfo}>
+                      <Text style={[styles.cartItemName, { color: colors.text }]}>{item.menuItem.name}</Text>
+                      <Text style={[styles.cartItemPrice, { color: colors.textSecondary }]}>₹{item.menuItem.fullPrice} x {item.quantity}</Text>
+                    </View>
+                    <View style={styles.cartItemControls}>
+                      <TouchableOpacity
+                        style={[styles.quantityButton, { backgroundColor: colors.primaryContainer, borderColor: colors.primary }]}
+                        onPress={() => updateCartQuantity(item.menuItem.id, -1)}
+                      >
+                        <Minus size={14} color={colors.primary} />
+                      </TouchableOpacity>
+                      <Text style={[styles.quantityText, { color: colors.text }]}>{item.quantity}</Text>
+                      <TouchableOpacity
+                        style={[styles.quantityButton, { backgroundColor: colors.primaryContainer, borderColor: colors.primary }]}
+                        onPress={() => updateCartQuantity(item.menuItem.id, 1)}
+                      >
+                        <Plus size={14} color={colors.primary} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.removeButton, { backgroundColor: colors.errorContainer }]}
+                        onPress={() => removeFromCart(item.menuItem.id)}
+                      >
+                        <Trash2 size={14} color={colors.error} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+                style={styles.cartList}
+                showsVerticalScrollIndicator={false}
+              />
+              <TouchableOpacity
+                style={[styles.placeOrderButton, { backgroundColor: colors.primary }]}
+                onPress={placeOrder}
+              >
+                <Text style={[styles.placeOrderText, { color: colors.onPrimary }]}>
+                  Place Order - ₹{getTotalPrice().toFixed(2)}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <Text style={[styles.emptyCartText, { color: colors.textSecondary }]}>Your cart is empty</Text>
+          )}
+        </View>
+      )}
 
       <View style={{ marginTop: 12, marginBottom: 12 }}>
         <Text
@@ -288,28 +459,34 @@ export default function MenuScreen() {
         />
       </View>
 
-      {getSections().map((section) => (
-        <View key={section.title} style={{ marginBottom: 24 }}>
-          <Text style={[styles.sectionHeader, { color: colors.primary }]}>{section.title}</Text>
-          <FlatList
-            data={section.data}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderMenuItem}
-            numColumns={4}
-            columnWrapperStyle={{ justifyContent: 'flex-start' }}
-            contentContainerStyle={{}}
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={
-              <View style={styles.emptyState}>
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No menu items found</Text>
-                <Text style={[styles.emptySubtext, { color: colors.textTertiary }]}>
-                  Add items to get started
-                </Text>
-              </View>
-            }
-          />
-        </View>
-      ))}
+      <FlatList
+        data={getSections()}
+        keyExtractor={(section) => section.title}
+        renderItem={({ item: section }) => (
+          <View style={{ marginBottom: 24 }}>
+            <Text style={[styles.sectionHeader, { color: colors.primary }]}>{section.title}</Text>
+            <FlatList
+              data={section.data}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderMenuItem}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 8 }}
+              ItemSeparatorComponent={() => <View style={{ width: 8 }} />}
+            />
+          </View>
+        )}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No menu items found</Text>
+            <Text style={[styles.emptySubtext, { color: colors.textTertiary }]}>
+              Add items to get started
+            </Text>
+          </View>
+        }
+      />
 
       <CreateMenuItemModal
         visible={showCreateModal}
@@ -346,6 +523,33 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  cartButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  cartBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cartBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
   addButton: {
     backgroundColor: '#FF6B35',
     width: 44,
@@ -376,87 +580,145 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 16,
   },
-  categoriesContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-  },
-  categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+  cartContainer: {
+    margin: 16,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    marginRight: 8,
-    backgroundColor: '#fff',
+    maxHeight: 300,
   },
-  categoryButtonActive: {
-    borderColor: '#FF6B35',
-    backgroundColor: '#fff5f2',
+  cartHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
   },
-  categoryText: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
-  },
-  categoryTextActive: {
-    color: '#FF6B35',
+  cartTitle: {
+    fontSize: 18,
     fontWeight: '600',
   },
-  menuList: {
-    paddingHorizontal: 20,
+  cartTotal: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  cartList: {
+    maxHeight: 150,
+  },
+  cartItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: 1,
+  },
+  cartItemInfo: {
+    flex: 1,
+  },
+  cartItemName: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  cartItemPrice: {
+    fontSize: 14,
+  },
+  cartItemControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  quantityControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  quantityButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: '600',
+    minWidth: 20,
+    textAlign: 'center',
+  },
+  removeButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeOrderButton: {
+    margin: 16,
     paddingVertical: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  placeOrderText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyCartText: {
+    textAlign: 'center',
+    padding: 20,
+    fontSize: 16,
   },
   menuCard: {
-    flex: 1,
-    margin: 6,
+    width: 200,
     borderRadius: 12,
     alignItems: 'center',
-    padding: 8,
-    minWidth: 0,
-    maxWidth: '100%',
+    padding: 12,
+    marginVertical: 4,
   },
   menuItemContent: {
     flex: 1,
-    padding: 16,
+    width: '100%',
   },
   menuItemInfo: {
     flex: 1,
   },
   menuItemName: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 4,
   },
   menuItemDescription: {
-    fontSize: 14,
-    marginBottom: 12,
-    lineHeight: 20,
+    fontSize: 12,
+    marginBottom: 8,
+    lineHeight: 16,
+    textAlign: 'center',
   },
   menuItemMeta: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 8,
   },
   menuItemPrice: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: '700',
-    textAlign: 'center',
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+  cartControls: {
+    alignItems: 'center',
   },
-  statusText: {
-    fontSize: 12,
-    color: '#fff',
+  addToCartButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 4,
+  },
+  addToCartText: {
+    fontSize: 14,
     fontWeight: '600',
-  },
-  menuItemActions: {
-    marginLeft: 12,
-    gap: 8,
   },
   emptyState: {
     alignItems: 'center',
@@ -472,8 +734,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   menuItemImage: {
-    width: 64,
-    height: 64,
+    width: 80,
+    height: 80,
     borderRadius: 12,
     marginBottom: 8,
   },
@@ -481,7 +743,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     marginTop: 24,
-    marginBottom: 8,
+    marginBottom: 12,
     marginLeft: 8,
   },
   // --- CATEGORY CARD STYLES FOR UNIFORM SIZE ---
