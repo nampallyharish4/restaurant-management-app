@@ -28,7 +28,7 @@ export default function SettingsScreen() {
       title: 'Restaurant',
       items: [
         { icon: Store, label: 'Restaurant Info', onPress: () => Alert.alert('Coming Soon') },
-        { icon: User, label: 'Staff Management', onPress: () to Alert.alert('Coming Soon') },
+        { icon: User, label: 'Staff Management', onPress: () => Alert.alert('Coming Soon') },
         { icon: Printer, label: 'Receipt Settings', onPress: () => Alert.alert('Coming Soon') },
       ]
     },
@@ -90,7 +90,7 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
+        <View style={[styles.profileCard, { backgroundColor: colors.card }, shadows.small]}>
           <View style={styles.profileAvatar}>
             <User size={32} color={colors.textSecondary} />
           </View>
@@ -147,7 +147,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <TouchableOpacity style={[styles.signOutButton, { backgroundColor: colors.card }]}>
+        <TouchableOpacity style={[styles.signOutButton, { backgroundColor: colors.card }, shadows.small]}>
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
 
@@ -182,11 +182,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 20,
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
   profileAvatar: {
     width: 64,
@@ -229,11 +224,6 @@ const styles = StyleSheet.create({
   },
   sectionContent: {
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
   settingItem: {
     flexDirection: 'row',
@@ -286,11 +276,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
   signOutText: {
     fontSize: 16,
