@@ -445,8 +445,12 @@ export default function MenuScreen() {
           contentContainerStyle={styles.categoriesScrollContent}
           style={styles.categoriesScrollContainer}
           snapToInterval={CATEGORY_CARD_WIDTH + 12}
+          snapToAlignment="start"
           decelerationRate="fast"
           bounces={false}
+          pagingEnabled={false}
+          scrollEventThrottle={16}
+          nestedScrollEnabled={true}
         />
       </View>
 
@@ -758,6 +762,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     alignItems: 'center',
     minHeight: 140,
+    paddingVertical: 8,
   },
   
   // Category Card Styles
