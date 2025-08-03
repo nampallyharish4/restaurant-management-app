@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Modal,
   View,
   Text,
   StyleSheet,
-  Modal,
-  ScrollView,
-  TouchableOpacity,
   TextInput,
+  TouchableOpacity,
+  FlatList,
   Alert,
+  ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Plus, Minus } from 'lucide-react-native';
 import { MenuService } from '@/services/MenuService';
 import { MenuItem } from '@/types/Menu';
-import { CreateOrderData } from '@/types/Order';
+import { OrderItem } from '@/types/Order';
+import { useTheme } from '@/hooks/useTheme';
 
 interface CreateOrderModalProps {
   visible: boolean;
@@ -27,13 +30,14 @@ interface OrderItem {
 }
 
 export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModalProps) {
+  const { colors, shadows } = useTheme();
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [orderType, setOrderType] = useState<'dine-in' | 'takeout' | 'delivery'>('dine-in');
   const [tableNumber, setTableNumber] = useState('');
   const [notes, setNotes] = useState('');
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
 
   useEffect(() => {
     if (visible) {
@@ -121,26 +125,28 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Create New Order</Text>
-          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-            <X size={24} color="#666" />
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+          <Text style={[styles.title, { color: colors.text }]}>Create New Order</Text>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <X size={24} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Customer Information</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Customer Information</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
               placeholder="Customer Name *"
+              placeholderTextColor={colors.textSecondary}
               value={customerName}
               onChangeText={setCustomerName}
             />
             <TextInput
-              style={styles.input}
-              placeholder="Phone Number (Optional)"
+              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+              placeholder="Phone Number"
+              placeholderTextColor={colors.textSecondary}
               value={customerPhone}
               onChangeText={setCustomerPhone}
               keyboardType="phone-pad"
@@ -148,7 +154,7 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Order Type</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Order Type</Text>
             <View style={styles.orderTypeContainer}>
               {(['dine-in', 'takeout', 'delivery'] as const).map((type) => (
                 <TouchableOpacity
@@ -170,8 +176,9 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
             </View>
             {orderType === 'dine-in' && (
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
                 placeholder="Table Number *"
+                placeholderTextColor={colors.textSecondary}
                 value={tableNumber}
                 onChangeText={setTableNumber}
               />
@@ -179,7 +186,7 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Menu Items</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Menu Items</Text>
             {menuItems.map((menuItem) => {
               const orderItem = orderItems.find(item => item.menuItem.id === menuItem.id);
               return (
@@ -192,25 +199,25 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
                     {orderItem ? (
                       <>
                         <TouchableOpacity
-                          style={styles.quantityButton}
+                          style={[styles.quantityButton, { backgroundColor: colors.primaryContainer, borderColor: colors.primary }]}
                           onPress={() => handleUpdateQuantity(menuItem.id, -1)}
                         >
-                          <Minus size={16} color="#FF6B35" />
+                          <Minus size={16} color={colors.primary} />
                         </TouchableOpacity>
-                        <Text style={styles.quantityText}>{orderItem.quantity}</Text>
+                        <Text style={[styles.quantityText, { color: colors.text }]}>{orderItem.quantity}</Text>
                         <TouchableOpacity
-                          style={styles.quantityButton}
+                          style={[styles.quantityButton, { backgroundColor: colors.primaryContainer, borderColor: colors.primary }]}
                           onPress={() => handleUpdateQuantity(menuItem.id, 1)}
                         >
-                          <Plus size={16} color="#FF6B35" />
+                          <Plus size={16} color={colors.primary} />
                         </TouchableOpacity>
                       </>
                     ) : (
                       <TouchableOpacity
-                        style={styles.addButton}
+                        style={[styles.addButton, { backgroundColor: colors.primary }]}
                         onPress={() => handleAddItem(menuItem)}
                       >
-                        <Plus size={16} color="#fff" />
+                        <Plus size={16} color={colors.onPrimary} />
                       </TouchableOpacity>
                     )}
                   </View>
@@ -220,10 +227,11 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Special Instructions</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Special Instructions</Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[styles.input, styles.textArea, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
               placeholder="Any special instructions or notes..."
+              placeholderTextColor={colors.textSecondary}
               value={notes}
               onChangeText={setNotes}
               multiline
@@ -232,23 +240,23 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
           </View>
         </ScrollView>
 
-        <View style={styles.footer}>
+        <View style={[styles.footer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
           <View style={styles.totalContainer}>
-            <Text style={styles.totalLabel}>Total: </Text>
-            <Text style={styles.totalAmount}>${total.toFixed(2)}</Text>
+            <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>Total: </Text>
+            <Text style={[styles.totalAmount, { color: colors.secondary }]}>${total.toFixed(2)}</Text>
           </View>
           <TouchableOpacity
             style={[
-              styles.submitButton,
+              styles.submitButton, { backgroundColor: colors.primary },
               orderItems.length === 0 && styles.submitButtonDisabled
             ]}
             onPress={handleSubmit}
             disabled={orderItems.length === 0}
           >
-            <Text style={styles.submitButtonText}>Create Order</Text>
+            <Text style={[styles.submitButtonText, { color: colors.onPrimary }]}>Create Order</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 }
@@ -389,11 +397,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footer: {
-    backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
   },
   totalContainer: {
     flexDirection: 'row',
@@ -403,15 +409,12 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 18,
-    color: '#666',
   },
   totalAmount: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#2D5016',
   },
   submitButton: {
-    backgroundColor: '#FF6B35',
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -422,6 +425,5 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
   },
 });
