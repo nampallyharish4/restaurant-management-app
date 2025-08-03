@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Clock, User, MapPin } from 'lucide-react-native';
+import { User, Clock, MapPin } from 'lucide-react-native';
 import { Order, OrderStatus } from '@/types/Order';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface OrderCardProps {
   order: Order;
@@ -9,6 +10,8 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onStatusUpdate }: OrderCardProps) {
+  const { colors } = useTheme();
+
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
       case 'new': return '#FF6B35';
@@ -40,7 +43,7 @@ export function OrderCard({ order, onStatusUpdate }: OrderCardProps) {
   const formatTime = (date: Date) => {
     const now = new Date();
     const diffMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
+
     if (diffMinutes < 60) {
       return `${diffMinutes}m ago`;
     } else {
@@ -52,39 +55,39 @@ export function OrderCard({ order, onStatusUpdate }: OrderCardProps) {
   const nextStatus = getNextStatus(order.status);
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
       <View style={styles.header}>
         <View style={styles.orderInfo}>
-          <Text style={styles.orderNumber}>{order.orderNumber}</Text>
+          <Text style={[styles.orderNumber, { color: colors.text }]}>{order.orderNumber}</Text>
           <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) }]}>
             <Text style={styles.statusText}>{order.status.toUpperCase()}</Text>
           </View>
         </View>
-        <Text style={styles.orderTime}>{formatTime(order.createdAt)}</Text>
+        <Text style={[styles.orderTime, { color: colors.textSecondary }]}>{formatTime(order.createdAt)}</Text>
       </View>
 
       <View style={styles.customerInfo}>
         <View style={styles.customerDetail}>
-          <User size={16} color="#666" />
-          <Text style={styles.customerText}>{order.customerName}</Text>
+          <User size={16} color={colors.textSecondary} />
+          <Text style={[styles.customerText, { color: colors.textSecondary }]}>{order.customerName}</Text>
         </View>
         {order.tableNumber && (
           <View style={styles.customerDetail}>
-            <MapPin size={16} color="#666" />
-            <Text style={styles.customerText}>Table {order.tableNumber}</Text>
+            <MapPin size={16} color={colors.textSecondary} />
+            <Text style={[styles.customerText, { color: colors.textSecondary }]}>Table {order.tableNumber}</Text>
           </View>
         )}
         <View style={styles.customerDetail}>
-          <Text style={styles.orderType}>{order.orderType.toUpperCase()}</Text>
+          <Text style={[styles.orderType, { color: colors.primary, backgroundColor: colors.primaryContainer }]}>{order.orderType.toUpperCase()}</Text>
         </View>
       </View>
 
-      <View style={styles.itemsList}>
+      <View style={[styles.itemsList, { borderTopColor: colors.divider }]}>
         {order.items.map((item, index) => (
           <View key={index} style={styles.item}>
-            <Text style={styles.itemQuantity}>{item.quantity}x</Text>
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+            <Text style={[styles.itemQuantity, { color: colors.text }]}>{item.quantity}x</Text>
+            <Text style={[styles.itemName, { color: colors.text }]}>{item.name}</Text>
+            <Text style={[styles.itemPrice, { color: colors.secondary }]}>${item.price.toFixed(2)}</Text>
           </View>
         ))}
       </View>
@@ -98,8 +101,8 @@ export function OrderCard({ order, onStatusUpdate }: OrderCardProps) {
 
       <View style={styles.footer}>
         <View style={styles.totalContainer}>
-          <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalAmount}>${order.total.toFixed(2)}</Text>
+          <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>Total:</Text>
+          <Text style={[styles.totalAmount, { color: colors.secondary }]}>${order.total.toFixed(2)}</Text>
         </View>
         {nextStatus && (
           <TouchableOpacity
@@ -116,11 +119,9 @@ export function OrderCard({ order, onStatusUpdate }: OrderCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
@@ -140,7 +141,6 @@ const styles = StyleSheet.create({
   orderNumber: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
   },
   orderTime: {
     fontSize: 12,
-    color: '#666',
   },
   customerInfo: {
     flexDirection: 'row',
@@ -170,20 +169,16 @@ const styles = StyleSheet.create({
   },
   customerText: {
     fontSize: 14,
-    color: '#666',
   },
   orderType: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#FF6B35',
-    backgroundColor: '#fff5f2',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,
   },
   itemsList: {
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
     paddingTop: 12,
     marginBottom: 12,
   },
@@ -195,18 +190,15 @@ const styles = StyleSheet.create({
   itemQuantity: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FF6B35',
     width: 32,
   },
   itemName: {
     flex: 1,
     fontSize: 14,
-    color: '#1a1a1a',
   },
   itemPrice: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#2D5016',
   },
   notesContainer: {
     backgroundColor: '#f8f9fa',
@@ -237,12 +229,10 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 16,
-    color: '#666',
   },
   totalAmount: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#2D5016',
   },
   actionButton: {
     paddingHorizontal: 16,
