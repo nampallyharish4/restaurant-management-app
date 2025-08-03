@@ -20,6 +20,7 @@ import { OrderCard } from '@/components/OrderCard';
 import { CreateOrderModal } from '@/components/CreateOrderModal';
 import { OrderService } from '@/services/OrderService';
 import { Order, OrderStatus } from '@/types/Order';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function OrdersScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -28,6 +29,7 @@ export default function OrdersScreen() {
   );
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const { colors, shadows } = useTheme();
 
   useEffect(() => {
     loadOrders();
@@ -90,34 +92,38 @@ export default function OrdersScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Order Management</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Order Management</Text>
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, { backgroundColor: colors.primary }]}
           onPress={() => setShowCreateModal(true)}
         >
-          <Plus size={24} color="#fff" />
+          <Plus size={24} color={colors.card} />
         </TouchableOpacity>
       </View>
 
       <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <ShoppingCart size={20} color="#FF6B35" />
-          <Text style={styles.statNumber}>{todayStats.totalOrders}</Text>
-          <Text style={styles.statLabel}>Orders Today</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.card }, shadows.small]}>
+          <View style={[styles.statIcon, { backgroundColor: colors.primaryContainer }]}>
+            <ShoppingCart size={20} color={colors.primary} />
+          </View>
+          <Text style={[styles.statValue, { color: colors.text }]}>{todayStats.totalOrders}</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Orders Today</Text>
         </View>
-        <View style={styles.statCard}>
-          <DollarSign size={20} color="#2D5016" />
-          <Text style={styles.statNumber}>
-            ₹{todayStats.revenue.toFixed(0)}
-          </Text>
-          <Text style={styles.statLabel}>Revenue</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.card }, shadows.small]}>
+          <View style={[styles.statIcon, { backgroundColor: colors.secondaryContainer }]}>
+            <DollarSign size={20} color={colors.secondary} />
+          </View>
+          <Text style={[styles.statValue, { color: colors.text }]}>₹{todayStats.revenue.toFixed(0)}</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Revenue</Text>
         </View>
-        <View style={styles.statCard}>
-          <Clock size={20} color="#FFB800" />
-          <Text style={styles.statNumber}>{todayStats.avgOrderTime}m</Text>
-          <Text style={styles.statLabel}>Avg Time</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.card }, shadows.small]}>
+          <View style={[styles.statIcon, { backgroundColor: colors.primaryContainer }]}>
+            <Clock size={20} color={colors.warning} />
+          </View>
+          <Text style={[styles.statValue, { color: colors.text }]}>{todayStats.avgOrderTime}m</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Avg Time</Text>
         </View>
       </View>
 
@@ -131,20 +137,16 @@ export default function OrdersScreen() {
             <TouchableOpacity
               style={[
                 styles.filterButton,
-                selectedStatus === item.key && [
-                  styles.filterButtonActive,
-                  { borderColor: item.color },
-                ],
+                { backgroundColor: colors.card, borderColor: colors.border },
+                selectedStatus === item.key && [styles.filterButtonActive, { borderColor: colors.primary, backgroundColor: colors.primaryContainer }],
               ]}
               onPress={() => setSelectedStatus(item.key as OrderStatus | 'all')}
             >
               <Text
                 style={[
                   styles.filterText,
-                  selectedStatus === item.key && [
-                    styles.filterTextActive,
-                    { color: item.color },
-                  ],
+                  { color: selectedStatus === item.key ? colors.primary : colors.textSecondary },
+                  selectedStatus === item.key && styles.filterTextActive,
                 ]}
               >
                 {item.label}
@@ -188,7 +190,6 @@ export default function OrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   header: {
     flexDirection: 'row',
@@ -196,27 +197,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   addButton: {
-    backgroundColor: '#FF6B35',
     width: 44,
     height: 44,
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#FF6B35',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -226,26 +218,26 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
     borderRadius: 12,
+    padding: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
-  statNumber: {
+  statIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
-    marginTop: 8,
+    marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: '#666',
-    marginTop: 4,
+    textAlign: 'center',
   },
   filtersContainer: {
     paddingHorizontal: 20,
@@ -256,17 +248,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    marginRight: 8,
-    backgroundColor: '#fff',
   },
   filterButtonActive: {
     borderWidth: 2,
-    backgroundColor: '#f8f9fa',
   },
   filterText: {
     fontSize: 14,
-    color: '#666',
     fontWeight: '500',
   },
   filterTextActive: {
