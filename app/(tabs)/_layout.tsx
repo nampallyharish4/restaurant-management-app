@@ -6,22 +6,20 @@ import {
   ChartBar as BarChart3,
   Settings,
 } from 'lucide-react-native';
-import { useTheme } from '@/contexts/ThemeContext';
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
-  const { colors } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarActiveTintColor: '#FF6B35',
+        tabBarInactiveTintColor: '#666',
         tabBarStyle: {
-          backgroundColor: colors.card,
+          backgroundColor: '#fff',
           borderTopWidth: 1,
-          borderTopColor: colors.border,
+          borderTopColor: '#e0e0e0',
           paddingBottom: Math.max(insets.bottom, 8),
           height: 60 + Math.max(insets.bottom - 8, 0),
         },
