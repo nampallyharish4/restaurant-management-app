@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, User, Store, CreditCard, Shield, CircleHelp as HelpCircle, ChevronRight, Printer, Wifi } from 'lucide-react-native';
+import { Bell, User, Store, CreditCard, Shield, CircleHelp as HelpCircle, ChevronRight, Printer, Wifi, Palette } from 'lucide-react-native';
+import { useTheme } from '@/contexts/ThemeContext';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function SettingsScreen() {
+  const { colors } = useTheme();
   const [notifications, setNotifications] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [autoAccept, setAutoAccept] = useState(false);
 
   const settingSections = [
+    {
+      title: 'Appearance',
+      items: [
+        { 
+          icon: Palette, 
+          label: 'Theme', 
+          rightComponent: (
+            <ThemeToggle variant="segmented" showLabels={false} />
+          )
+        },
+      ]
+    },
     {
       title: 'Restaurant',
       items: [
@@ -69,47 +84,48 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Settings</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.profileCard}>
+        <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
           <View style={styles.profileAvatar}>
-            <User size={32} color="#666" />
+            <User size={32} color={colors.textSecondary} />
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>Restaurant Admin</Text>
-            <Text style={styles.profileEmail}>admin@restaurant.com</Text>
+            <Text style={[styles.profileName, { color: colors.text }]}>Restaurant Admin</Text>
+            <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>admin@restaurant.com</Text>
           </View>
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit</Text>
+          <TouchableOpacity style={[styles.editButton, { borderColor: colors.primary }]}>
+            <Text style={[styles.editButtonText, { color: colors.primary }]}>Edit</Text>
           </TouchableOpacity>
         </View>
 
         {settingSections.map((section, sectionIndex) => (
           <View key={sectionIndex} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <View style={styles.sectionContent}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
+            <View style={[styles.sectionContent, { backgroundColor: colors.card }]}>
               {section.items.map((item, itemIndex) => (
                 <TouchableOpacity
                   key={itemIndex}
                   style={[
                     styles.settingItem,
+                    { borderBottomColor: colors.divider },
                     itemIndex === section.items.length - 1 && styles.settingItemLast
                   ]}
                   onPress={item.onPress}
                   disabled={!!item.rightComponent}
                 >
                   <View style={styles.settingItemLeft}>
-                    <View style={styles.settingIcon}>
-                      <item.icon size={20} color="#666" />
+                    <View style={[styles.settingIcon, { backgroundColor: colors.surfaceVariant }]}>
+                      <item.icon size={20} color={colors.textSecondary} />
                     </View>
-                    <Text style={styles.settingLabel}>{item.label}</Text>
+                    <Text style={[styles.settingLabel, { color: colors.text }]}>{item.label}</Text>
                   </View>
                   <View style={styles.settingItemRight}>
-                    {item.rightComponent || <ChevronRight size={20} color="#ccc" />}
+                    {item.rightComponent || <ChevronRight size={20} color={colors.textTertiary} />}
                   </View>
                 </TouchableOpacity>
               ))}
@@ -118,25 +134,25 @@ export default function SettingsScreen() {
         ))}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-          <View style={styles.sectionContent}>
-            <View style={styles.aboutItem}>
-              <Text style={styles.aboutLabel}>Version</Text>
-              <Text style={styles.aboutValue}>1.0.0</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>About</Text>
+          <View style={[styles.sectionContent, { backgroundColor: colors.card }]}>
+            <View style={[styles.aboutItem, { borderBottomColor: colors.divider }]}>
+              <Text style={[styles.aboutLabel, { color: colors.text }]}>Version</Text>
+              <Text style={[styles.aboutValue, { color: colors.textSecondary }]}>1.0.0</Text>
             </View>
             <View style={styles.aboutItem}>
-              <Text style={styles.aboutLabel}>Build</Text>
-              <Text style={styles.aboutValue}>2024.1.1</Text>
+              <Text style={[styles.aboutLabel, { color: colors.text }]}>Build</Text>
+              <Text style={[styles.aboutValue, { color: colors.textSecondary }]}>2024.1.1</Text>
             </View>
           </View>
         </View>
 
-        <TouchableOpacity style={styles.signOutButton}>
+        <TouchableOpacity style={[styles.signOutButton, { backgroundColor: colors.card }]}>
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>© 2024 Restaurant Order Management</Text>
+          <Text style={[styles.footerText, { color: colors.textTertiary }]}>© 2024 Restaurant Order Management</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -146,19 +162,15 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   content: {
     flex: 1,
@@ -167,7 +179,6 @@ const styles = StyleSheet.create({
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     marginTop: 20,
     padding: 20,
     borderRadius: 12,
@@ -181,7 +192,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'rgba(128, 128, 128, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -192,23 +203,19 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1a1a1a',
     marginBottom: 4,
   },
   profileEmail: {
     fontSize: 14,
-    color: '#666',
   },
   editButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#FF6B35',
   },
   editButtonText: {
     fontSize: 14,
-    color: '#FF6B35',
     fontWeight: '600',
   },
   section: {
@@ -217,12 +224,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
     marginBottom: 12,
     paddingHorizontal: 4,
   },
   sectionContent: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -251,14 +256,12 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#f8f9fa',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   settingLabel: {
     fontSize: 16,
-    color: '#1a1a1a',
     flex: 1,
   },
   settingItemRight: {
@@ -271,18 +274,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
   },
   aboutLabel: {
     fontSize: 16,
-    color: '#1a1a1a',
   },
   aboutValue: {
     fontSize: 16,
-    color: '#666',
   },
   signOutButton: {
-    backgroundColor: '#fff',
     marginTop: 24,
     paddingVertical: 16,
     borderRadius: 12,
@@ -304,6 +303,5 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: '#999',
   },
 });
