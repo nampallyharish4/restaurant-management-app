@@ -42,8 +42,8 @@ export default function SettingsScreen() {
             <Switch
               value={notifications}
               onValueChange={setNotifications}
-              trackColor={{ false: '#e0e0e0', true: '#FF6B35' }}
-              thumbColor={notifications ? '#fff' : '#f4f3f4'}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor={notifications ? colors.card : colors.surfaceVariant}
             />
           )
         },
@@ -54,8 +54,8 @@ export default function SettingsScreen() {
             <Switch
               value={soundEnabled}
               onValueChange={setSoundEnabled}
-              trackColor={{ false: '#e0e0e0', true: '#FF6B35' }}
-              thumbColor={soundEnabled ? '#fff' : '#f4f3f4'}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor={soundEnabled ? colors.card : colors.surfaceVariant}
             />
           )
         },
@@ -66,8 +66,8 @@ export default function SettingsScreen() {
             <Switch
               value={autoAccept}
               onValueChange={setAutoAccept}
-              trackColor={{ false: '#e0e0e0', true: '#FF6B35' }}
-              thumbColor={autoAccept ? '#fff' : '#f4f3f4'}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor={autoAccept ? colors.card : colors.surfaceVariant}
             />
           )
         },
