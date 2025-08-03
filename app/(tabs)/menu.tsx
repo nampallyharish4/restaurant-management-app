@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -33,45 +34,6 @@ export default function MenuScreen() {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
-  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
-
-  useEffect(() => {
-    fetchMenuData();
-  }, []);
-
-  const fetchMenuData = async () => {
-    try {
-      // Fetch categories
-      const response = await fetch('http://localhost:3001/api/menu/categories');
-      const categories = await response.json();
-      setMenuCategories(categories);
-
-      // Fetch menu items
-      const menuResponse = await fetch('http://localhost:3001/api/menu');
-      const items = await menuResponse.json();
-      setMenuItems(items);
-    } catch (error) {
-      console.error('Error fetching menu data:', error);
-      // Fallback to static data if API fails
-      setMenuCategories([
-        {
-          id: 'veg-biryanis',
-          name: 'Veg Biryanis',
-          sortOrder: 0
-        },
-        {
-          id: 'nonveg-biryanis', 
-          name: 'Non-Veg Biryanis',
-          sortOrder: 1
-        },
-        {
-          id: 'chinese-food',
-          name: 'Chinese Food',
-          sortOrder: 2
-        },
-      ]);
-    }
-  };
 
   useEffect(() => {
     loadMenuData();
@@ -167,7 +129,7 @@ export default function MenuScreen() {
       Alert.alert('Empty Cart', 'Please add items to cart before placing order');
       return;
     }
-
+    
     Alert.alert(
       'Place Order',
       `Total: ₹${getTotalPrice().toFixed(2)}\nItems: ${getTotalItems()}\n\nProceed with order?`,
@@ -223,7 +185,7 @@ export default function MenuScreen() {
 
   const renderMenuItem = ({ item }: { item: MenuItem }) => {
     const cartItem = cartItems.find(cartItem => cartItem.menuItem.id === item.id);
-
+    
     return (
       <View style={[styles.menuCard, { backgroundColor: colors.card }]}>
         <Image source={{ uri: item.image }} style={styles.menuItemImage} />
@@ -808,7 +770,7 @@ const styles = StyleSheet.create({
     minHeight: 140,
     paddingVertical: 8,
   },
-
+  
   // Category Card Styles
   categoryCard: {
     borderRadius: 12,

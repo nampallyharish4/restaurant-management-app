@@ -18,14 +18,10 @@ export type MenuCategory = {
 export interface CreateMenuItemData {
   name: string;
   description: string;
-  category: string;
   price: number;
+  category: string;
   available: boolean;
   preparationTime: number;
-}
-
-export interface MenuCategory {
-  id: string;
-  name: string;
-  sortOrder: number;
+  ingredients?: string[];
+  allergens?: string[];
 }

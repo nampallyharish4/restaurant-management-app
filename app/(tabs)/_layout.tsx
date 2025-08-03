@@ -58,24 +58,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-          name="admin"
-          options={{
-            title: 'Admin',
-            tabBarIcon: ({ color, focused }) => (
-              <Database size={24} color={color} />
-            ),
-          }}
-        />
-
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: 'Settings',
-            tabBarIcon: ({ color, focused }) => (
-              <Settings size={24} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
-    );
-  }
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ size, color }) => (
+            <Settings size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}
