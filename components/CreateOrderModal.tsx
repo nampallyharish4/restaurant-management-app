@@ -193,7 +193,7 @@ export function CreateOrderModal({ visible, onClose, onSubmit }: CreateOrderModa
                 <View key={menuItem.id} style={[styles.menuItemCard, { backgroundColor: colors.card }, shadows.small]}>
                   <View style={styles.menuItemInfo}>
                     <Text style={[styles.menuItemName, { color: colors.text }]}>{menuItem.name}</Text>
-                    <Text style={[styles.menuItemPrice, { color: colors.secondary }]}>${menuItem.price.toFixed(2)}</Text>
+                    <Text style={[styles.menuItemPrice, { color: colors.secondary }]}>₹{menuItem.fullPrice.toFixed(2)}</Text>
                   </View>
                   <View style={styles.quantityControls}>
                     {orderItem ? (
