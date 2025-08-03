@@ -314,12 +314,6 @@ export default function MenuScreen() {
               </View>
             )}
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => setShowCreateModal(true)}
-          >
-            <Plus size={24} color="#fff" />
-          </TouchableOpacity>
         </View>
       </View>
 
