@@ -115,11 +115,6 @@ interface ThemeContextType {
   themeMode: ThemeMode;
   isDark: boolean;
   colors: ThemeColors;
-  shadows: {
-    small: object;
-    medium: object;
-    large: object;
-  };
   setThemeMode: (mode: ThemeMode) => void;
   toggleTheme: () => void;
 }
@@ -144,31 +139,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // Get current theme colors
   const colors = isDark ? darkTheme : lightTheme;
-
-  // Get theme-appropriate shadows
-  const shadows = {
-    small: {
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 2,
-      elevation: 2,
-    },
-    medium: {
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.4 : 0.15,
-      shadowRadius: 4,
-      elevation: 4,
-    },
-    large: {
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: isDark ? 0.5 : 0.2,
-      shadowRadius: 8,
-      elevation: 8,
-    },
-  };
 
   // Load saved theme preference
   useEffect(() => {
@@ -215,7 +185,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     themeMode,
     isDark,
     colors,
-    shadows,
     setThemeMode,
     toggleTheme,
   };
