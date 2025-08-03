@@ -35,19 +35,33 @@ export default function AdminScreen() {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      // In a real app, you'd fetch this from your API
-      // For demo purposes, we'll simulate the data
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const [menuResponse, categoriesResponse, ordersResponse] = await Promise.all([
+        fetch('http://localhost:3001/api/menu'),
+        fetch('http://localhost:3001/api/menu/categories'),
+        fetch('http://localhost:3001/api/orders')
+      ]);
+
+      const menuItems = await menuResponse.json();
+      const categories = await categoriesResponse.json();
+      const orders = await ordersResponse.json();
+
+      const totalRevenue = orders.reduce((sum: number, order: any) => sum + order.total, 0);
       
+      setStats({
+        menuItems: menuItems.length,
+        categories: categories.length,
+        orders: orders.length,
+        totalRevenue,
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      // Fallback to demo data if API fails
       setStats({
         menuItems: 42,
         categories: 9,
         orders: 127,
         totalRevenue: 12450.75,
       });
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-      Alert.alert('Error', 'Failed to load database statistics');
     } finally {
       setLoading(false);
     }

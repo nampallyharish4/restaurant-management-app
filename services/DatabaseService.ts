@@ -80,7 +80,7 @@ export class DatabaseService {
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS order_items (
         id TEXT PRIMARY KEY,
-        orderId TEXT NOT SQL,
+        orderId TEXT NOT NULL,
         name TEXT NOT NULL,
         price REAL NOT NULL,
         quantity INTEGER NOT NULL,
