@@ -466,8 +466,14 @@ export default function MenuScreen() {
               renderItem={renderMenuItem}
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 8 }}
-              ItemSeparatorComponent={() => <View style={{ width: 8 }} />}
+              contentContainerStyle={{ paddingHorizontal: 8, paddingVertical: 4 }}
+              ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+              snapToInterval={212}
+              snapToAlignment="start"
+              decelerationRate="fast"
+              scrollEventThrottle={16}
+              nestedScrollEnabled={true}
+              bounces={false}
             />
           </View>
         )}
