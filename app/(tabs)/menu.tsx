@@ -394,16 +394,8 @@ export default function MenuScreen() {
         </View>
       )}
 
-      <View style={{ marginTop: 12, marginBottom: 12 }}>
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: '700',
-            marginLeft: 16,
-            marginBottom: 8,
-            color: colors.text,
-          }}
-        >
+      <View style={styles.categoriesSection}>
+        <Text style={[styles.categoriesTitle, { color: colors.text }]}>
           Categories
         </Text>
         <FlatList
@@ -423,19 +415,21 @@ export default function MenuScreen() {
               style={[
                 styles.categoryCard,
                 { backgroundColor: colors.card, borderColor: colors.border },
-                selectedCategory === item.id && [styles.categoryCardActive, { borderColor: colors.primary, backgroundColor: colors.primaryContainer }],
+                selectedCategory === item.id && [
+                  styles.categoryCardActive, 
+                  { borderColor: colors.primary, backgroundColor: colors.primaryContainer }
+                ],
               ]}
               onPress={() => setSelectedCategory(item.id)}
-              activeOpacity={0.8}
+              activeOpacity={0.7}
             >
               <View style={styles.categoryIcon}>
                 <Image
                   source={{
-                    uri:
-                      item.image ||
-                      'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                    uri: item.image || 'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
                   }}
                   style={styles.categoryIconImage}
+                  resizeMode="cover"
                 />
               </View>
               <Text
@@ -454,8 +448,11 @@ export default function MenuScreen() {
               </Text>
             </TouchableOpacity>
           )}
-          contentContainerStyle={{ paddingLeft: 8, paddingRight: 8, alignItems: 'center', minHeight: 140 }}
-          style={{ minHeight: 140 }}
+          contentContainerStyle={styles.categoriesScrollContent}
+          style={styles.categoriesScrollContainer}
+          snapToInterval={CATEGORY_CARD_WIDTH + 12}
+          decelerationRate="fast"
+          bounces={false}
         />
       </View>
 
@@ -506,6 +503,7 @@ const CATEGORY_CARD_WIDTH = 110;
 const CATEGORY_CARD_HEIGHT = 130;
 const CATEGORY_ICON_SIZE = 72;
 const CATEGORY_IMAGE_SIZE = 60;
+const CATEGORY_CARD_SPACING = 12;
 
 const styles = StyleSheet.create({
   container: {
@@ -746,19 +744,50 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginLeft: 8,
   },
-  // --- CATEGORY CARD STYLES FOR UNIFORM SIZE ---
+  // Categories Section
+  categoriesSection: {
+    marginTop: 12,
+    marginBottom: 16,
+  },
+  categoriesTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginLeft: 16,
+    marginBottom: 12,
+  },
+  categoriesScrollContainer: {
+    minHeight: 140,
+    maxHeight: 140,
+  },
+  categoriesScrollContent: {
+    paddingLeft: 16,
+    paddingRight: 16,
+    alignItems: 'center',
+    minHeight: 140,
+  },
+  
+  // Category Card Styles
   categoryCard: {
     borderRadius: 12,
     width: CATEGORY_CARD_WIDTH,
     height: CATEGORY_CARD_HEIGHT,
-    marginRight: 12,
+    marginRight: CATEGORY_CARD_SPACING,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    padding: 0,
+    padding: 8,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  categoryCardActive: {},
+  categoryCardActive: {
+    transform: [{ scale: 1.02 }],
+    shadowOpacity: 0.15,
+    elevation: 6,
+  },
   categoryIcon: {
     width: CATEGORY_ICON_SIZE,
     height: CATEGORY_ICON_SIZE,
@@ -773,19 +802,21 @@ const styles = StyleSheet.create({
     width: CATEGORY_IMAGE_SIZE,
     height: CATEGORY_IMAGE_SIZE,
     borderRadius: CATEGORY_IMAGE_SIZE / 2,
-    resizeMode: 'cover',
     alignSelf: 'center',
   },
   categoryCardLabel: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
     paddingHorizontal: 4,
-    width: CATEGORY_CARD_WIDTH - 8,
-    minHeight: 36,
-    maxHeight: 36,
-    lineHeight: 18,
+    width: CATEGORY_CARD_WIDTH - 16,
+    minHeight: 32,
+    maxHeight: 32,
+    lineHeight: 16,
     flexShrink: 1,
   },
-  categoryCardLabelActive: { fontWeight: '700' },
+  categoryCardLabelActive: { 
+    fontWeight: '700',
+    fontSize: 13,
+  },
 });
