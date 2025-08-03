@@ -118,17 +118,17 @@ export default function MenuScreen() {
   };
 
   const renderMenuItem = ({ item }: { item: MenuItem }) => (
-    <View style={styles.menuCard}>
+    <View style={[styles.menuCard, { backgroundColor: colors.card }]}>
       <Image source={{ uri: item.image }} style={styles.menuItemImage} />
       <View style={styles.menuItemContent}>
         <View style={styles.menuItemInfo}>
-          <Text style={styles.menuItemName}>{item.name}</Text>
-          <Text style={styles.menuItemDescription}>{item.description}</Text>
+          <Text style={[styles.menuItemName, { color: colors.text }]}>{item.name}</Text>
+          <Text style={[styles.menuItemDescription, { color: colors.textSecondary }]}>{item.description}</Text>
           <View style={styles.menuItemMeta}>
-            <Text style={styles.menuItemPrice}>₹{item.fullPrice}</Text>
+            <Text style={[styles.menuItemPrice, { color: colors.secondary }]}>₹{item.fullPrice}</Text>
             <Text
               style={{
-                color: item.isVeg ? 'green' : 'red',
+                color: item.isVeg ? colors.success : colors.error,
                 fontWeight: 'bold',
               }}
             >
@@ -211,11 +211,12 @@ export default function MenuScreen() {
       </View>
 
       <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Search size={20} color="#666" />
+        <View style={[styles.searchInputContainer, { backgroundColor: colors.surface }]}>
+          <Search size={20} color={colors.textSecondary} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.text }]}
             placeholder="Search menu items..."
+            placeholderTextColor={colors.textTertiary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -229,6 +230,7 @@ export default function MenuScreen() {
             fontWeight: '700',
             marginLeft: 16,
             marginBottom: 8,
+            color: colors.text,
           }}
         >
           Categories
@@ -249,7 +251,8 @@ export default function MenuScreen() {
             <TouchableOpacity
               style={[
                 styles.categoryCard,
-                selectedCategory === item.id && styles.categoryCardActive,
+                { backgroundColor: colors.card, borderColor: colors.border },
+                selectedCategory === item.id && [styles.categoryCardActive, { borderColor: colors.primary, backgroundColor: colors.primaryContainer }],
               ]}
               onPress={() => setSelectedCategory(item.id)}
               activeOpacity={0.8}
@@ -267,8 +270,11 @@ export default function MenuScreen() {
               <Text
                 style={[
                   styles.categoryCardLabel,
-                  selectedCategory === item.id &&
+                  { color: colors.textSecondary },
+                  selectedCategory === item.id && [
                     styles.categoryCardLabelActive,
+                    { color: colors.primary }
+                  ],
                 ]}
                 numberOfLines={2}
                 ellipsizeMode="tail"
@@ -284,7 +290,7 @@ export default function MenuScreen() {
 
       {getSections().map((section) => (
         <View key={section.title} style={{ marginBottom: 24 }}>
-          <Text style={styles.sectionHeader}>{section.title}</Text>
+          <Text style={[styles.sectionHeader, { color: colors.primary }]}>{section.title}</Text>
           <FlatList
             data={section.data}
             keyExtractor={(item) => item.id.toString()}
@@ -295,8 +301,8 @@ export default function MenuScreen() {
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>No menu items found</Text>
-                <Text style={styles.emptySubtext}>
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No menu items found</Text>
+                <Text style={[styles.emptySubtext, { color: colors.textTertiary }]}>
                   Add items to get started
                 </Text>
               </View>
@@ -327,7 +333,6 @@ const CATEGORY_IMAGE_SIZE = 60;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   header: {
     flexDirection: 'row',
@@ -335,14 +340,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1a1a1a',
   },
   addButton: {
     backgroundColor: '#FF6B35',
@@ -360,14 +362,11 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -376,7 +375,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 12,
     fontSize: 16,
-    color: '#1a1a1a',
   },
   categoriesContainer: {
     paddingHorizontal: 20,
@@ -412,7 +410,6 @@ const styles = StyleSheet.create({
   menuCard: {
     flex: 1,
     margin: 6,
-    backgroundColor: '#fff',
     borderRadius: 12,
     alignItems: 'center',
     padding: 8,
@@ -429,13 +426,11 @@ const styles = StyleSheet.create({
   menuItemName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1a1a1a',
     textAlign: 'center',
     marginBottom: 4,
   },
   menuItemDescription: {
     fontSize: 14,
-    color: '#666',
     marginBottom: 12,
     lineHeight: 20,
   },
@@ -447,7 +442,6 @@ const styles = StyleSheet.create({
   menuItemPrice: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#2D5016',
     textAlign: 'center',
   },
   statusBadge: {
@@ -472,11 +466,9 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#666',
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#999',
     marginTop: 8,
   },
   menuItemImage: {
@@ -490,12 +482,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 24,
     marginBottom: 8,
-    color: '#FF6B35',
     marginLeft: 8,
   },
   // --- CATEGORY CARD STYLES FOR UNIFORM SIZE ---
   categoryCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     width: CATEGORY_CARD_WIDTH,
     height: CATEGORY_CARD_HEIGHT,
@@ -503,11 +493,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#eee',
     padding: 0,
     overflow: 'hidden',
   },
-  categoryCardActive: { borderColor: '#FF6B35', backgroundColor: '#fff5f2' },
+  categoryCardActive: {},
   categoryIcon: {
     width: CATEGORY_ICON_SIZE,
     height: CATEGORY_ICON_SIZE,
@@ -527,7 +516,6 @@ const styles = StyleSheet.create({
   },
   categoryCardLabel: {
     fontSize: 14,
-    color: '#666',
     fontWeight: '500',
     textAlign: 'center',
     paddingHorizontal: 4,
@@ -537,5 +525,5 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     flexShrink: 1,
   },
-  categoryCardLabelActive: { color: '#FF6B35', fontWeight: '700' },
+  categoryCardLabelActive: { fontWeight: '700' },
 });
