@@ -460,21 +460,9 @@ export default function MenuScreen() {
         renderItem={({ item: section }) => (
           <View style={{ marginBottom: 24 }}>
             <Text style={[styles.sectionHeader, { color: colors.primary }]}>{section.title}</Text>
-            <FlatList
-              data={section.data}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderMenuItem}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 8, paddingVertical: 4 }}
-              ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
-              snapToInterval={212}
-              snapToAlignment="start"
-              decelerationRate="fast"
-              scrollEventThrottle={16}
-              nestedScrollEnabled={true}
-              bounces={false}
-            />
+            <View style={styles.menuItemsGrid}>
+              {section.data.map((item) => renderMenuItem({ item }))}
+            </View>
           </View>
         )}
         showsVerticalScrollIndicator={false}
@@ -671,11 +659,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   menuCard: {
-    width: 200,
+    flex: 1,
+    margin: 6,
+    minWidth: '45%',
+    maxWidth: '48%',
     borderRadius: 12,
     alignItems: 'center',
     padding: 12,
-    marginVertical: 4,
   },
   menuItemContent: {
     flex: 1,
@@ -746,7 +736,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 24,
     marginBottom: 12,
-    marginLeft: 8,
+    marginHorizontal: 16,
+  },
+  menuItemsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 10,
+    justifyContent: 'space-between',
   },
   // Categories Section
   categoriesSection: {
