@@ -478,6 +478,7 @@ export default function MenuScreen() {
           </View>
         )}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
         contentContainerStyle={{ paddingBottom: 20 }}
         ListEmptyComponent={
           <View style={styles.emptyState}>
