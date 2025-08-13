@@ -3,13 +3,26 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } f
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bell, User, Store, CreditCard, Shield, CircleHelp as HelpCircle, ChevronRight, Printer, Wifi, Palette } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function SettingsScreen() {
   const { colors, shadows } = useTheme();
+  const { user, userProfile, signOut } = useAuth();
   const [notifications, setNotifications] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [autoAccept, setAutoAccept] = useState(false);
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign Out', style: 'destructive', onPress: signOut },
+      ]
+    );
+  };
 
   const settingSections = [
     {
@@ -95,8 +108,15 @@ export default function SettingsScreen() {
             <User size={32} color={colors.textSecondary} />
           </View>
           <View style={styles.profileInfo}>
-            <Text style={[styles.profileName, { color: colors.text }]}>Restaurant Admin</Text>
-            <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>admin@restaurant.com</Text>
+            <Text style={[styles.profileName, { color: colors.text }]}>
+              {userProfile?.full_name || 'User'}
+            </Text>
+            <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
+              {user?.email}
+            </Text>
+            <Text style={[styles.profileRole, { color: colors.primary }]}>
+              {userProfile?.role?.toUpperCase()}
+            </Text>
           </View>
           <TouchableOpacity style={[styles.editButton, { borderColor: colors.primary }]}>
             <Text style={[styles.editButtonText, { color: colors.primary }]}>Edit</Text>
@@ -147,7 +167,10 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <TouchableOpacity style={[styles.signOutButton, { backgroundColor: colors.card }, shadows.small]}>
+        <TouchableOpacity 
+          style={[styles.signOutButton, { backgroundColor: colors.card }, shadows.small]}
+          onPress={handleSignOut}
+        >
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
 
@@ -202,6 +225,11 @@ const styles = StyleSheet.create({
   },
   profileEmail: {
     fontSize: 14,
+  },
+  profileRole: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 4,
   },
   editButton: {
     paddingHorizontal: 16,
